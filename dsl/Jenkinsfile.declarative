@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    // agent { label 'some-agent' }
+    options {
+        timeout(activity: true, time: 1, unit: 'HOURS')
+        timestamps()
+    }
+    environment {
+        SOME_CREDS = credentials('some-creds')
+    }
+    parameters { 
+        string(name: 'x_request_id', defaultValue: 'N/A', description: 'A unique UUID for each webhook request')
+    }
+    triggers {
+        GenericTrigger(
+            genericHeaderVariables: [
+                [key: 'User-Agent', regexpFilter: ''],
+                [key: 'X-Event-Key', regexpFilter: '']
+            ],
+
+            causeString: 'Triggered by $user_agent. X-Request-Id: $x_request_id',
+
+            token: 'some-token',
+     
+            printContributedVariables: true,
+            printPostContent: true,
+     
+            silentResponse: false,
+
+            regexpFilterText: '$user_agent',
+            regexpFilterExpression: 'curl/*'
+
+        )
+    }
+    stages {
+        stage('debug') {
+            steps {
+                print x_request_id
+                sh 'exit 1'
+            }
+        }
+    }
+    post {
+        failure {
+            print 'failure'
+        }
+        aborted {
+            print 'aborted'
+        }
+    }
+}
+void print(String message){
+    echo message
+}
