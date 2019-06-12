@@ -24,9 +24,9 @@ void log(message){
  *
  * @maintainer virtuz.blr@gmail.com
  */
-void getClassNameAndMethods(thing){
-    log("getClassNameAndMethods(${thing})")
-    log(thing.getClass().getName())
-    log(thing.metaClass.methods*.name.sort().unique())
+void getClassNameAndPropertiesAndMethods(thing){
+    log "void getClassNameAndMethods(${thing})"
+    log "class: ${thing.getClass().getName()}"
+    log "properties: ${thing.metaClass.properties*.name.sort().unique()}" 
+    log "methods: ${thing.metaClass.methods*.name.sort().unique()}"
 }
-
